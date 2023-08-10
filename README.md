@@ -9,12 +9,12 @@ Click **<a href="https://gubchik123-calculator.netlify.app" target="_blank">here
 
 <a href="https://gubchik123-calculator.netlify.app" target="_blank"><img title="Demo light theme" alt="Demo light theme image" src="./public/demo-light.jpg"></a>
 
-This template should help get you started developing with Vue 3 in Vite.
-
 ### Dark theme
 
 There is a theme toggler between light and dark themes.
 <a href="https://gubchik123-calculator.netlify.app" target="_blank"><img title="Demo dark theme" alt="Demo dark theme image" src="./public/demo-dark.jpg"></a>
+
+This template should help get you started developing with Vue 3 in Vite.
 
 ## Customize configuration
 
