@@ -2,7 +2,7 @@
     <div>
         <History @restore="restore" :history="history" />
         
-        <div class="container mt-5 pt-5">
+        <div @keyup="handle_key_press" class="container mt-5 pt-5">
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <div class="calculator">
@@ -16,11 +16,7 @@
                             {{ expression }}
                         </div>
                         <div class="row">
-                            <button
-                                @click="expression_history = null, expression = '0'"
-                                id="clear"
-                                class="col"
-                            >
+                            <button @click="clear" id="clear" class="col">
                                 C
                             </button>
                             <button @click="remove_last_char" class="col" id="backspace">
@@ -73,23 +69,6 @@ export default {
         }
     },
     computed: {
-        calculate() {
-            if (this.expression !== "0") {
-                try {
-                    this.expression_history = this.expression
-                    this.expression = String(
-                        Function("'use strict'; return (" + this.expression + ")")()
-                    )
-                    this.history.push({
-                        time: this._get_current_time(),
-                        expression: `${this.expression_history} = ${this.expression}`,
-                    })
-                } catch (error) {
-                    alert(error.message)
-                    this.expression = "0"
-                }
-            }
-        },
         _is_ends_with_operator() {
             return ["+", "-", "*", "/"].includes(this.expression.slice(-1))
         },
@@ -103,6 +82,21 @@ export default {
         }
     },
     methods: {
+        handle_key_press(event) {
+            const digits = "0123456789"
+            const operators = "+-*/"
+            const key = event.key
+            if (digits.includes(key)) this.add_number(key)
+            else if (operators.includes(key)) this.add_operator(key)
+            else if (key == ".") this.add_dot()
+            else if (key == "Enter" || key == "=") this.calculate()
+            else if (key == "Backspace") this.remove_last_char()
+            else if (key == "Escape" || key == "c") this.clear()
+        },
+        clear() {
+            this.expression_history = null;
+            this.expression = "0";
+        },
         remove_last_char() {
             this.expression_history = null;
             if (this.expression.length === 1 && this.expression !== "0") this.expression = "0"
@@ -122,6 +116,23 @@ export default {
         add_dot() {
             this.expression_history = null;
             if (this._can_add_decimal) this.expression += "."
+        },
+        calculate() {
+            if (this.expression !== "0") {
+                try {
+                    this.expression_history = this.expression
+                    this.expression = String(
+                        Function("'use strict'; return (" + this.expression + ")")()
+                    )
+                    this.history.push({
+                        time: this._get_current_time(),
+                        expression: `${this.expression_history} = ${this.expression}`,
+                    })
+                } catch (error) {
+                    alert(error.message)
+                    this.expression = "0"
+                }
+            }
         },
         restore(expression) {
             this.expression_history = expression.split(" = ")[0];
