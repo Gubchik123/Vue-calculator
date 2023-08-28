@@ -1,6 +1,7 @@
 <template>
     <div id="theme_toggler" class="position-absolute">
         <input
+            @change="toggle_theme"
             type="checkbox"
             id="theme_toggler_btn"
             class="checkbox opacity-0 position-absolute"
@@ -23,18 +24,17 @@ export default {
             this.set_dark_mode()
             theme_toggler_btn.checked = !theme_toggler_btn.checked
         }
-
-        theme_toggler_btn.addEventListener("change", () => {
-            if (document.documentElement.hasAttribute("theme")) {
-                localStorage.setItem("dark-theme", "no")
-                document.documentElement.removeAttribute("theme")
-            } else this.set_dark_mode()
-        })
     },
     methods: {
         set_dark_mode() {
             localStorage.setItem("dark-theme", "yes")
             document.documentElement.setAttribute("theme", "dark")
+        },
+        toggle_theme() {
+            if (document.documentElement.hasAttribute("theme")) {
+                localStorage.setItem("dark-theme", "no")
+                document.documentElement.removeAttribute("theme")
+            } else this.set_dark_mode()
         }
     }
 }
