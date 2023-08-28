@@ -1,53 +1,57 @@
 <template>
-    <div class="container mt-5 pt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="calculator">
-                    <div
-                        v-show="expression_history" 
-                        class="history text-muted"
-                    >
-                        {{ expression_history }} =
-                    </div>
-                    <div class="result">
-                        {{ expression }}
-                    </div>
-                    <div class="row">
-                        <button 
-                            @click="expression_history = null, expression = '0'" 
-                            id="clear"
-                            class="col" 
+    <div>
+        <History @restore="restore" :history="history" />
+        
+        <div class="container mt-5 pt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="calculator">
+                        <div
+                            v-show="expression_history"
+                            class="history text-muted"
                         >
-                            C
-                        </button>
-                        <button @click="remove_last_char" class="col" id="backspace">
-                            &#9003;
-                        </button>
-                        <button @click="add_operator('%')" class="col" id="modulo">%</button>
-                        <button @click="add_operator('/')" class="col" id="divide">/</button>
-                    </div>
-                    <div class="row">
-                        <button @click="add_number('7')" class="col" id="7">7</button>
-                        <button @click="add_number('8')" class="col" id="8">8</button>
-                        <button @click="add_number('9')" class="col" id="9">9</button>
-                        <button @click="add_operator('*')" class="col" id="multiply">*</button>
-                    </div>
-                    <div class="row">
-                        <button @click="add_number('4')" class="col" id="4">4</button>
-                        <button @click="add_number('5')" class="col" id="5">5</button>
-                        <button @click="add_number('6')" class="col" id="6">6</button>
-                        <button @click="add_operator('-')" class="col" id="subtract">-</button>
-                    </div>
-                    <div class="row">
-                        <button @click="add_number('1')" class="col" id="1">1</button>
-                        <button @click="add_number('2')" class="col" id="2">2</button>
-                        <button @click="add_number('3')" class="col" id="3">3</button>
-                        <button @click="add_operator('+')" class="col" id="add">+</button>
-                    </div>
-                    <div class="row">
-                        <button @click="add_number('0')" class="col-6" id="0">0</button>
-                        <button @click="add_dot('.')" class="col" id="decimal">.</button>
-                        <button @click="calculate" class="col" id="equals">=</button>
+                            {{ expression_history }} =
+                        </div>
+                        <div class="result">
+                            {{ expression }}
+                        </div>
+                        <div class="row">
+                            <button
+                                @click="expression_history = null, expression = '0'"
+                                id="clear"
+                                class="col"
+                            >
+                                C
+                            </button>
+                            <button @click="remove_last_char" class="col" id="backspace">
+                                &#9003;
+                            </button>
+                            <button @click="add_operator('%')" class="col" id="modulo">%</button>
+                            <button @click="add_operator('/')" class="col" id="divide">/</button>
+                        </div>
+                        <div class="row">
+                            <button @click="add_number('7')" class="col" id="7">7</button>
+                            <button @click="add_number('8')" class="col" id="8">8</button>
+                            <button @click="add_number('9')" class="col" id="9">9</button>
+                            <button @click="add_operator('*')" class="col" id="multiply">*</button>
+                        </div>
+                        <div class="row">
+                            <button @click="add_number('4')" class="col" id="4">4</button>
+                            <button @click="add_number('5')" class="col" id="5">5</button>
+                            <button @click="add_number('6')" class="col" id="6">6</button>
+                            <button @click="add_operator('-')" class="col" id="subtract">-</button>
+                        </div>
+                        <div class="row">
+                            <button @click="add_number('1')" class="col" id="1">1</button>
+                            <button @click="add_number('2')" class="col" id="2">2</button>
+                            <button @click="add_number('3')" class="col" id="3">3</button>
+                            <button @click="add_operator('+')" class="col" id="add">+</button>
+                        </div>
+                        <div class="row">
+                            <button @click="add_number('0')" class="col-6" id="0">0</button>
+                            <button @click="add_dot('.')" class="col" id="decimal">.</button>
+                            <button @click="calculate" class="col" id="equals">=</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -56,10 +60,17 @@
 </template>
 
 <script>
+import History from "./History.vue"
+
 export default {
     name: "Calculator",
+    components: { History },
     data() {
-        return { expression: "0", expression_history: null }
+        return { 
+            history: [],
+            expression: "0", 
+            expression_history: null,
+        }
     },
     computed: {
         calculate() {
@@ -69,6 +80,10 @@ export default {
                     this.expression = String(
                         Function("'use strict'; return (" + this.expression + ")")()
                     )
+                    this.history.push({
+                        time: this._get_current_time(),
+                        expression: `${this.expression_history} = ${this.expression}`,
+                    })
                 } catch (error) {
                     alert(error.message)
                     this.expression = "0"
@@ -107,6 +122,17 @@ export default {
         add_dot() {
             this.expression_history = null;
             if (this._can_add_decimal) this.expression += "."
+        },
+        restore(expression) {
+            this.expression_history = expression.split(" = ")[0];
+            this.expression = expression.split(" = ")[1];
+        },
+        _get_current_time() {
+            const date = new Date()
+            const hours = date.getHours()
+            const minutes = date.getMinutes()
+            const seconds = date.getSeconds()
+            return `${hours}:${minutes}:${seconds}`
         }
     }
 }
