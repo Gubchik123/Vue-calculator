@@ -6,8 +6,8 @@
             class="checkbox opacity-0 position-absolute"
         />
         <label class="label" for="theme_toggler_btn">
-            <ion-icon ref="sunny_icon" name="sunny"></ion-icon>
-            <ion-icon ref="moon_icon" name="moon"></ion-icon>
+            <ion-icon v-pre name="sunny" class="icon"></ion-icon>
+            <ion-icon v-pre name="moon" class="icon"></ion-icon>
             <div class="ball"></div>
         </label>
     </div>
@@ -17,9 +17,6 @@
 export default {
     name: "ThemeToggler",
     mounted() {
-        this.$refs.sunny_icon.style.color = "yellow"
-        this.$refs.moon_icon.style.color = "yellow"
-
         const theme_toggler_btn = document.getElementById("theme_toggler_btn")
 
         if (localStorage.getItem("dark-theme") == "yes") {
@@ -90,8 +87,7 @@ export default {
 .checkbox:checked + .label .ball {
     transform: translateX(24px);
 }
-ion-icon[name="moon"],
-ion-icon[name="sunny"] {
-    color: yellow !important;
+.icon {
+    color: yellow;
 }
 </style>
