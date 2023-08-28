@@ -3,9 +3,23 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="calculator">
-                    <div class="result">{{ expression }}</div>
+                    <div
+                        v-show="expression_history" 
+                        class="history text-muted"
+                    >
+                        {{ expression_history }} =
+                    </div>
+                    <div class="result">
+                        {{ expression }}
+                    </div>
                     <div class="row">
-                        <button @click="expression = '0'" class="col" id="clear">C</button>
+                        <button 
+                            @click="expression_history = null, expression = '0'" 
+                            id="clear"
+                            class="col" 
+                        >
+                            C
+                        </button>
                         <button @click="remove_last_char" class="col" id="backspace">
                             &#9003;
                         </button>
@@ -45,12 +59,13 @@
 export default {
     name: "Calculator",
     data() {
-        return { expression: "0" }
+        return { expression: "0", expression_history: null }
     },
     computed: {
         calculate() {
             if (this.expression !== "0") {
                 try {
+                    this.expression_history = this.expression
                     this.expression = String(
                         Function("'use strict'; return (" + this.expression + ")")()
                     )
@@ -74,19 +89,23 @@ export default {
     },
     methods: {
         remove_last_char() {
+            this.expression_history = null;
             if (this.expression.length === 1 && this.expression !== "0") this.expression = "0"
             else if (this.expression !== "0") this.expression = this.expression.slice(0, -1)
         },
         add_number(number) {
+            this.expression_history = null;
             if (this.expression === "0" || this.expression === "Error") this.expression = number
             else this.expression += number
         },
         add_operator(operator) {
+            this.expression_history = null;
             if (this._is_ends_with_operator)
                 this.expression = this.expression.slice(0, -1) + operator
             else this.expression += operator
         },
         add_dot() {
+            this.expression_history = null;
             if (this._can_add_decimal) this.expression += "."
         }
     }
@@ -102,9 +121,12 @@ export default {
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+.calculator .history,
 .calculator .result {
     font-size: 1.5rem;
     text-align: right;
+}
+.calculator .result {
     margin-bottom: 15px;
 }
 .calculator button {
