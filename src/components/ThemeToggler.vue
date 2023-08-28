@@ -2,6 +2,7 @@
     <div id="theme_toggler" class="position-absolute">
         <input
             @change="toggle_theme"
+            ref="theme_toggler_btn"
             type="checkbox"
             id="theme_toggler_btn"
             class="checkbox opacity-0 position-absolute"
@@ -18,11 +19,9 @@
 export default {
     name: "ThemeToggler",
     mounted() {
-        const theme_toggler_btn = document.getElementById("theme_toggler_btn")
-
         if (localStorage.getItem("dark-theme") == "yes") {
             this.set_dark_mode()
-            theme_toggler_btn.checked = !theme_toggler_btn.checked
+            this.$refs.theme_toggler_btn.checked = !this.$refs.theme_toggler_btn.checked
         }
     },
     methods: {
